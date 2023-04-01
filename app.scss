@@ -1,0 +1,294 @@
+$background-color: #333;
+$primary-color: #0164FE;
+$font-large: 20px;
+
+// Common class
+.font_weight_500 {
+	font-weight: 500;
+}
+
+.flat_card {
+	@extend .p_15;
+	@extend .border_bottom_grey;
+}
+
+.inbetween_content {
+	@extend .flex_direction_row;
+	@extend .justify_content_between;
+}
+
+.flat_row_card {
+	@extend .flat_card;
+	@extend .inbetween_content;
+}
+
+// colors
+.color_grey {
+	color: #949494;
+}
+
+.green_bkg {
+	background-color: rgb(241, 255, 241);
+}
+
+// text align
+.text_center {
+	text-align: center;
+}
+
+.text_right {
+	text-align: right;
+}
+
+.text_bold {
+	font-weight: 500;
+}
+
+// FLEX
+.d_flex {
+	display: flex;
+}
+
+.d_block {
+	display: block;
+}
+
+.flex_direction_row {
+	flex-direction: row;
+}
+
+.align_items_center {
+	align-items: center;
+}
+
+.align_items_end {
+	align-items: flex-end;
+}
+
+.justify_content_center {
+	justify-content: center;
+}
+
+.justify_content_around {
+	justify-content: space-around;
+}
+
+.justify_content_between {
+	justify-content: space-between;
+}
+
+.flex_1 {
+	flex: 1;
+}
+
+.red {
+	color: red;
+}
+
+.full_width {
+	align-self: stretch;
+}
+
+.width_100 {
+	width: 100px;
+}
+
+.gap_10 {
+	gap: 10;
+}
+
+// MARGIN
+.m_0 {
+	margin: 0;
+}
+
+.ml_10 {
+	margin-left: 10px;
+}
+
+.ml_5 {
+	margin-left: 5px;
+}
+
+.mb_5 {
+	margin-bottom: 5px;
+}
+
+.mb_10 {
+	margin-bottom: 10px;
+}
+
+.mb_20 {
+	margin-bottom: 20px;
+}
+
+.mt_10 {
+	margin-top: 10px;
+}
+
+.mt_20 {
+	margin-top: 20px;
+}
+
+.mt_30 {
+	margin-top: 30px;
+}
+
+.mt_50 {
+	margin-top: 50px;
+}
+
+.m_t_b_20 {
+	@extend .mt_20;
+	@extend .mb_20;
+}
+
+.m_t_b_40 {
+	margin-top: 40px;
+	margin-bottom: 40px;
+}
+
+
+
+// Padding
+.p_0 {
+	padding: 0;
+}
+
+.p_5 {
+	padding: 5px;
+}
+
+.p_10 {
+	padding: 10px;
+}
+
+.p_15 {
+	padding: 15px;
+}
+
+.p_30 {
+	padding: 30px;
+}
+
+.p_b_10 {
+	padding-bottom: 10px;
+}
+
+.p_t_b_10 {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+// border
+.border_bottom_grey {
+	border-bottom: solid 1px #ddd;
+}
+
+.divider {
+	border-bottom: dashed 1px #d3d3d3;
+}
+
+// Form
+.formFieldText {
+	border: 0;
+}
+
+// Dashboard screen Strat
+.h1 {
+	font-size: 30px;
+	font-weight: bold;
+}
+
+.h2 {
+	font-size: 17px;
+	font-weight: bold;
+}
+
+.h3 {
+	font-size: 15px;
+	font-weight: bold;
+}
+
+// button
+.button {
+	height: 45px;
+	background-color: $primary-color;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 10px;
+}
+
+.buttonText {
+	color: #fff;
+	font-weight: bold;
+}
+
+.googleButton {
+	background-color: #F1F5F6;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	gap: 20;
+}
+
+.googleButtonText {
+	color: #212121;
+	font-weight: normal;
+}
+
+.googleIcon {
+	width: 20px;
+	height: 20px;
+}
+
+// OR divider
+.or_container {
+	margin: 10px 0;
+	align-items: center;
+	position: relative;
+}
+
+.or_text {
+	background-color: #fff;
+	height: 50px;
+	width: 50px;
+	border-radius: 50px;
+	padding-top: 14px;
+	text-align: center;
+	position: relative;
+	z-index: 1;
+}
+
+.or_divider {
+	position: absolute;
+	width: 100%;
+	border-bottom-color: #efefef;
+	border-bottom-width: 1px;
+	top: 25px;
+}
+
+.linkText {
+	font-weight: 500;
+	color: $primary-color;
+}
+
+.date {
+	margin-top: 5px;
+	color: #949494;
+}
+
+// Dashboard screen End
+
+// Details screen Start
+// Details screen End
+
+
+// Expense screen Start
+.expenseItemContainer {
+	border-bottom: solid 1px #ddd;
+}
+
+// Expense screen End
