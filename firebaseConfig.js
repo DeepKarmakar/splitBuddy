@@ -1,6 +1,9 @@
 // import { initializeApp } from 'firebase/app';
 import firebase from 'firebase/compat/app';
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+import "firebase/compat/storage";
 
 
 
@@ -29,5 +32,7 @@ const firebaseConfig = {
 export const Firebase = firebase.initializeApp(firebaseConfig)
 export const Auth = getAuth(Firebase);
 
+export const FirebaseDB = getFirestore(Firebase);
+export const FireaseStorage = getStorage(Firebase);
 // For more information on how to access Firebase in your project,
 // see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase

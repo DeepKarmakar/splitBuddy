@@ -5,7 +5,7 @@ import Member from "./Member";
 import Icon from 'react-native-vector-icons/AntDesign';
 import Appstyles from '../../../../app.scss';
 
-const Members = ({ data, setUpdateMember }) => {
+const Members = ({ data, setUpdateMember, isRequiredError }) => {
 	const [members, setMembers] = useState(data);
 
 	const changeHandler = (val, index) => {
@@ -15,9 +15,9 @@ const Members = ({ data, setUpdateMember }) => {
 		if (setUpdateMember) {
 			setUpdateMember(copyMembers)
 		}
-		if (isLastItem(index)) {
-			addMembers();
-		}
+		// if (isLastItem(index)) {
+		// 	addMembers();
+		// }
 	}
 	const removeHandler = (index) => {
 		const copyMembers = [...members];
@@ -49,6 +49,10 @@ const Members = ({ data, setUpdateMember }) => {
 				}
 				keyExtractor={item => item.id}
 			/>
+
+			{isRequiredError && (
+				<Text style={[Appstyles.error_text_color, Appstyles.mt_5]}>One member name is required</Text>
+			)}
 			<Pressable
 				style={[Appstyles.flex_direction_row, Appstyles.p_15, Appstyles.align_items_center]}
 				onPress={addMembers}>

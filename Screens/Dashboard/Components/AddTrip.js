@@ -1,26 +1,34 @@
 import { useState } from "react";
-import { Button, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, Image, Pressable, ScrollView, StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import Icon from 'react-native-vector-icons/AntDesign';
 import Appstyles from '../../../app.scss';
 import FormField from '../../../Components/FormInputs/FormField';
 import { formData } from '../../../Components/FormInputs/formData';
 import Members from "../../Details/Components/Members/Members";
 import * as ImagePicker from 'expo-image-picker';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { Firebase, FirebaseDB } from "../../../firebaseConfig";
+import { getAuth } from "firebase/auth";
+import { randomId } from "../../../Utils";
+
 
 const AddTrip = () => {
+	const auth = getAuth();
+	const currentUserId = auth.currentUser.uid;
 	const [formValues, handleFormValueChange, setFormValues] = formData({
 		title: '',
 		description: '',
 	})
-	const [members, setMembers] = useState([{ name: '', id: 1 }]);
+	const [members, setMembers] = useState([{ name: '', id: randomId() }]);
 	const [image, setImage] = useState(null);
+	const [uploading, setUploading] = useState(false);
+	const [coverImg, setCoverImg] = useState('');
+	const [requiredError, setRequiredError] = useState({
+		title: false,
+		members: false
+	});
 
-	const handleSubmit = () => {
-		console.log(formValues);
-		console.log(members);
-	}
-
-	const pickImage = async () => {
+	const pickImage = async (e) => {
 		// No permissions request is necessary for launching the image library
 		let result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -29,11 +37,85 @@ const AddTrip = () => {
 			quality: 1,
 		});
 
-		console.log(result);
-
 		if (!result.canceled) {
 			setImage(result.assets[0].uri);
+			const uploadimg = uploadImage(result.assets[0].uri)
 		}
+	};
+
+	const uploadImage = async (file) => {
+		setUploading(true)
+		const response = await fetch(file);
+		const blob = await response.blob();
+		var ref = Firebase.storage().ref().child("trip-images/" + randomId()).put(blob).then((snapshot) => {
+			snapshot.ref.getDownloadURL().then(function (downloadURL) {
+				setCoverImg(downloadURL);
+			});
+		});
+		try {
+			await ref;
+		} catch (err) {
+			console.log(err);
+		}
+
+		setUploading(false)
+	}
+
+	const handleSubmit = () => {
+		if (uploading) {
+			alert("Image is uploading");
+			return
+		}
+		if (!isValidForm()) {
+			return
+		}
+
+		const data = { ...formValues };
+		data.members = members;
+		data.uid = currentUserId;
+		data.date = serverTimestamp()
+		data.expenseList = [];
+		data.coverImage = coverImg;
+		addFirebaseDoc(data)
+	}
+
+	const isValidForm = () => {
+
+		// title Validation
+		let isInValidTitle = formValues.title.trim().length == '';
+
+		// Members Validation
+		let isInValidMember = members.every(member => {
+			return member.name.trim() == ''
+		})
+
+		setRequiredError({ title: isInValidTitle, members: isInValidMember });
+
+		return (!isInValidMember && !isInValidMember);
+	};
+
+	const addFirebaseDoc = async (data) => {
+
+		try {
+			const docRef = await addDoc(collection(FirebaseDB, "trips"), data);
+		} catch (e) {
+			console.error("Error adding document: ", e);
+		} finally {
+			// Create the event
+			var event = new CustomEvent("closeAddTripPopup");
+			document.dispatchEvent(event);
+			clearForm()
+		}
+	}
+
+	const clearForm = () => {
+		setFormValues({
+			title: '',
+			description: '',
+		});
+		setMembers([{ name: '', id: randomId() }]);
+		setImage(null);
+		setCoverImg('');
 	};
 
 
@@ -45,8 +127,8 @@ const AddTrip = () => {
 					label='Title'
 					formKey='title'
 					placeholder='Trip Title'
-
 					handleFormValueChange={handleFormValueChange}
+					isRequiredError={requiredError.title}
 				/>
 				<FormField
 					label='Description'
@@ -58,7 +140,7 @@ const AddTrip = () => {
 					handleFormValueChange={handleFormValueChange}
 					type="textarea"
 				/>
-				<Pressable onPress={pickImage}>
+				<Pressable onPress={(e) => pickImage(e)}>
 					<View style={[styles.mediaContainer, Appstyles.justify_content_between, Appstyles.align_items_center]}>
 						{image ?
 							(
@@ -72,11 +154,18 @@ const AddTrip = () => {
 								/>
 							)
 						}
-						<Text style={[Appstyles.mt_10]}>Upload Your Trip Image</Text>
+						<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_center, Appstyles.mt_10]}>
+							<Text>Upload Your Trip Image </Text>
+							<ActivityIndicator animating={uploading} />
+						</View>
+
 					</View>
 				</Pressable>
 				<Text style={[Appstyles.h3, Appstyles.p_t_b_10, Appstyles.mt_10, styles.borderBottomDashed]}>Add Members</Text>
-				<Members data={members} setUpdateMember={setMembers} />
+				<Members
+					data={members}
+					setUpdateMember={setMembers}
+					isRequiredError={requiredError.members} />
 			</View>
 			<Button
 				title="Add Trip"

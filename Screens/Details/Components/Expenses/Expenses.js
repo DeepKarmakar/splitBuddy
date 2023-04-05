@@ -32,10 +32,12 @@ const Expenses = ({ data }) => {
 	};
 
 	useEffect(() => {
-		const subtotal = expenses.map(item => item.amount).reduce((prev, next) => prev + next);
-		const perHead = subtotal / (data.members.length);
-		setExpenseShortDetails({ subtotal, perHead })
-	}, []);
+		if (expenses.length) {
+			const subtotal = expenses.map(item => item.amount).reduce((prev, next) => prev + next);
+			const perHead = subtotal / (data.members.length);
+			setExpenseShortDetails({ subtotal, perHead })
+		}
+	}, [expenses]);
 
 	return (
 		<ScrollView style={Appstyles.ExpenseContainer}>

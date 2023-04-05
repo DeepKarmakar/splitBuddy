@@ -23,6 +23,7 @@
 		"node-sass": "^8.0.0",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
+		"react-global-loader": "^1.2.4",
 		"react-native": "0.71.3",
 		"react-native-dotenv": "^3.4.8",
 		"react-native-modal-datetime-picker": "^14.0.1",

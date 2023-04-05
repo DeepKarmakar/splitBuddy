@@ -1,21 +1,59 @@
-import { StyleSheet, Text, View, Button, Image, TextInput, Pressable } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View, Image, TextInput, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import EvilIcon from 'react-native-vector-icons/EvilIcons';
 import { GoogleIcon, welcomeBkg } from '../../../assets/images';
 import Appstyles from '../../../app.scss';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
+import { Auth } from '../../../firebaseConfig';
 
 
 const Login = () => {
 	const [showPassword, setShowPassword] = useState(false);
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const navigation = useNavigation();
+	const provider = new GoogleAuthProvider();
+
+	const googleSignIn = async () => {
+		await signInWithPopup(Auth, provider)
+			.then((result) => {
+				// This gives you a Google Access Token. You can use it to access the Google API.
+				const credential = GoogleAuthProvider.credentialFromResult(result);
+				const token = credential.accessToken;
+				// The signed-in user info.
+				const user = result.user;
+				console.log(user);
+				// IdP data available using getAdditionalUserInfo(result)
+				// ...
+			}).catch((error) => {
+				// Handle Errors here.
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				// The email of the user's account used.
+				const email = error.customData.email;
+				// The AuthCredential type that was used.
+				const credential = GoogleAuthProvider.credentialFromError(error);
+				// ...
+				console.log(error);
+			});
+	}
+
+	const handleLogin = async () => {
+		await signInWithEmailAndPassword(Auth, email, password)
+			.then((user) => {
+				console.log(user);
+			})
+			.catch((error) => {
+				console.log(error);
+				alert(error.message)
+			})
+	};
+
 	return (
 		<View style={[styles.container]}>
 			<View style={Appstyles.align_items_center}>
 				<Image source={welcomeBkg} style={styles.welcomeBkg} />
-				{/* <Text>Manage your trip with <Text style={styles.boldText}>SplitBuddy</Text></Text> */}
 			</View>
 			<View>
 				<Text style={[Appstyles.h1, Appstyles.mb_10]}>Login</Text>
@@ -30,8 +68,9 @@ const Login = () => {
 							style={[styles.slikInput]}
 							placeholder="Email ID"
 							placeholderTextColor="#a5a5a5"
-							// value={email}
 							autoCapitalize="none"
+							value={email}
+							onChangeText={(email) => setEmail(email)}
 						/>
 					</View>
 					<View style={styles.input_wrapper}>
@@ -44,7 +83,8 @@ const Login = () => {
 							style={[styles.slikInput, styles.passwordInput]}
 							placeholder="Password"
 							placeholderTextColor="#a5a5a5"
-							// value={email}
+							value={password}
+							onChangeText={(password) => setPassword(password)}
 							secureTextEntry={!showPassword}
 							autoCapitalize="none"
 						/>
@@ -72,14 +112,16 @@ const Login = () => {
 							<Text style={Appstyles.linkText}>Forgot Password?</Text>
 						</Pressable>
 					</View>
-					<Pressable style={Appstyles.button}>
+					<Pressable style={Appstyles.button} onPress={handleLogin}>
 						<Text style={Appstyles.buttonText}>Login</Text>
 					</Pressable>
 					<View style={Appstyles.or_container}>
 						<Text style={Appstyles.or_text}>OR</Text>
 						<View style={Appstyles.or_divider}></View>
 					</View>
-					<Pressable style={[Appstyles.button, Appstyles.googleButton, Appstyles.mb_20]}>
+					<Pressable
+						onPress={googleSignIn}
+						style={[Appstyles.button, Appstyles.googleButton, Appstyles.mb_20]}>
 						<Image source={GoogleIcon} style={styles.googleIcon} />
 						<Text style={[Appstyles.buttonText, Appstyles.googleButtonText]}>Login With Google</Text>
 					</Pressable>

@@ -1,15 +1,33 @@
-import { StyleSheet, Text, View, Button, Image, TextInput, Pressable } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View, Image, TextInput, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { GoogleIcon, welcomeBkg } from '../../../assets/images';
+import { welcomeBkg } from '../../../assets/images';
 import Appstyles from '../../../app.scss';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { Auth } from '../../../firebaseConfig';
 
 
 const Register = () => {
 	const [showPassword, setShowPassword] = useState(false);
+	const [name, setName] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const navigation = useNavigation();
+
+	const handleSignUp = async () => {
+		try {
+			const res = await createUserWithEmailAndPassword(Auth, email, password);
+			const user = res.user;
+			await updateProfile(user.auth.currentUser, {
+				displayName: name,
+			});
+		} catch (err) {
+			console.error(err);
+			alert(err.message);
+		}
+	};
+
 	return (
 		<View style={[styles.container]}>
 			<View style={Appstyles.align_items_center}>
@@ -29,8 +47,9 @@ const Register = () => {
 							style={[styles.slikInput]}
 							placeholder="Full Name"
 							placeholderTextColor="#a5a5a5"
-							// value={email}
 							autoCapitalize="none"
+							value={name}
+							onChangeText={(name) => setName(name)}
 						/>
 					</View>
 					<View style={styles.input_wrapper}>
@@ -43,8 +62,9 @@ const Register = () => {
 							style={[styles.slikInput]}
 							placeholder="Email ID"
 							placeholderTextColor="#a5a5a5"
-							// value={email}
 							autoCapitalize="none"
+							value={email}
+							onChangeText={(email) => setEmail(email)}
 						/>
 					</View>
 					<View style={styles.input_wrapper}>
@@ -57,9 +77,10 @@ const Register = () => {
 							style={[styles.slikInput, styles.passwordInput]}
 							placeholder="Password"
 							placeholderTextColor="#a5a5a5"
-							// value={email}
 							secureTextEntry={!showPassword}
 							autoCapitalize="none"
+							value={password}
+							onChangeText={(password) => setPassword(password)}
 						/>
 						{showPassword ? (
 							<Icon
@@ -79,7 +100,7 @@ const Register = () => {
 							/>
 						)}
 					</View>
-					<Pressable style={[Appstyles.button, Appstyles.mt_20]}>
+					<Pressable style={[Appstyles.button, Appstyles.mt_20]} onPress={handleSignUp}>
 						<Text style={Appstyles.buttonText}>Continue</Text>
 					</Pressable>
 					<View style={[Appstyles.flex_direction_row, Appstyles.align_items_center, Appstyles.justify_content_center, Appstyles.mt_20]}>

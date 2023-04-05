@@ -1,5 +1,6 @@
 $background-color: #333;
 $primary-color: #0164FE;
+$error-color: #EE534F;
 $font-large: 20px;
 
 // Common class
@@ -25,6 +26,10 @@ $font-large: 20px;
 // colors
 .color_grey {
 	color: #949494;
+}
+
+.error_text_color {
+	color: $error-color;
 }
 
 .green_bkg {
@@ -110,6 +115,10 @@ $font-large: 20px;
 	margin-left: 5px;
 }
 
+.mr_10 {
+	margin-right: 10px;
+}
+
 .mb_5 {
 	margin-bottom: 5px;
 }
@@ -120,6 +129,10 @@ $font-large: 20px;
 
 .mb_20 {
 	margin-bottom: 20px;
+}
+
+.mt_5 {
+	margin-top: 5px;
 }
 
 .mt_10 {
@@ -268,6 +281,11 @@ $font-large: 20px;
 	border-bottom-color: #efefef;
 	border-bottom-width: 1px;
 	top: 25px;
+}
+
+.loader_container {
+	background-color: rgb(223, 223, 223);
+	flex: 1;
 }
 
 .linkText {

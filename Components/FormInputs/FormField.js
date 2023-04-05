@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput } from 'react-native';
+import Appstyles from '../../app.scss';
 
 const FormField = (props) => {
 	return (
@@ -16,6 +17,9 @@ const FormField = (props) => {
 				multiline={props.type == "textarea"}
 				numberOfLines={props.type == "textarea" ? 3 : 1}
 			/>
+			{props.isRequiredError && (
+				<Text style={[Appstyles.error_text_color, Appstyles.mt_5]}>{props.label} is required</Text>
+			)}
 		</View>
 	)
 }

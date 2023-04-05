@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, Alert, Modal, Text, Pressable, View } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import AddTrip from '../../Screens/Dashboard/Components/AddTrip';
@@ -7,6 +7,11 @@ import Appstyles from '../../app.scss';
 const Popover = (props) => {
 	const [modalVisible, setModalVisible] = useState(false);
 
+	useEffect(() => {
+		document.addEventListener("closeAddTripPopup", () => {
+			setModalVisible(false)
+		});
+	}, []);
 	return (
 		<>
 			<Modal
