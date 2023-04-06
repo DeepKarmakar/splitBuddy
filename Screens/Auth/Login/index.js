@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { GoogleIcon, welcomeBkg } from '../../../assets/images';
 import Appstyles from '../../../app.scss';
@@ -14,6 +14,7 @@ const Login = () => {
 	const [password, setPassword] = useState("");
 	const navigation = useNavigation();
 	const provider = new GoogleAuthProvider();
+	const [loading, setLoading] = useState(false);
 
 	const googleSignIn = async () => {
 		await signInWithPopup(Auth, provider)
@@ -40,6 +41,7 @@ const Login = () => {
 	}
 
 	const handleLogin = async () => {
+		setLoading(true)
 		await signInWithEmailAndPassword(Auth, email, password)
 			.then((user) => {
 				console.log(user);
@@ -47,6 +49,9 @@ const Login = () => {
 			.catch((error) => {
 				console.log(error);
 				alert(error.message)
+			})
+			.finally(() => {
+				setLoading(false)
 			})
 	};
 
@@ -112,8 +117,9 @@ const Login = () => {
 							<Text style={Appstyles.linkText}>Forgot Password?</Text>
 						</Pressable>
 					</View>
-					<Pressable style={Appstyles.button} onPress={handleLogin}>
+					<Pressable style={[Appstyles.button, Appstyles.flex_direction_row, Appstyles.gap_10]} onPress={handleLogin}>
 						<Text style={Appstyles.buttonText}>Login</Text>
+						<ActivityIndicator animating={loading} color="#fff" style={styles.loginLoader} />
 					</Pressable>
 					<View style={Appstyles.or_container}>
 						<Text style={Appstyles.or_text}>OR</Text>
@@ -185,6 +191,10 @@ const styles = StyleSheet.create({
 		right: 0,
 		bottom: 3,
 		zIndex: 1
+	},
+	loginLoader: {
+		position: 'absolute',
+		right: 20
 	}
 });
 
