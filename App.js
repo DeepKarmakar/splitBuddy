@@ -10,6 +10,7 @@ import { Auth } from './firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import Header from './Components/Header';
 import Profile from './Screens/Auth/Profile';
+import EventProvider from './EventProvider/EventProvider';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,25 +39,27 @@ export default function App() {
 	);
 
 	const UserStack = () => (
-		<Stack.Navigator>
-			<Stack.Screen
-				name='Dashboard'
-				component={Dashboard}
-				options={{
-					title: 'Dashboard',
-					headerRight: () => <Header user={userdetails} />,
-				}}
-			/>
-			<Stack.Screen
-				name='Details'
-				component={Details}
-				options={({ route }) => ({ title: route.params.title })}
-			/>
-			<Stack.Screen
-				name='Profile'
-				component={Profile}
-			/>
-		</Stack.Navigator>
+		<EventProvider>
+			<Stack.Navigator>
+				<Stack.Screen
+					name='Dashboard'
+					component={Dashboard}
+					options={{
+						title: 'Dashboard',
+						headerRight: () => <Header user={userdetails} />,
+					}}
+				/>
+				<Stack.Screen
+					name='Details'
+					component={Details}
+					options={({ route }) => ({ title: route.params.title })}
+				/>
+				<Stack.Screen
+					name='Profile'
+					component={Profile}
+				/>
+			</Stack.Navigator>
+		</EventProvider>
 	);
 
 	useEffect(() => {

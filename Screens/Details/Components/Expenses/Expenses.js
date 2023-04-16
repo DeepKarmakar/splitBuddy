@@ -1,71 +1,112 @@
-import { FlatList, Pressable, ScrollView, Text, View } from "react-native"
+import { Alert, FlatList, ScrollView, Text, View } from "react-native"
 import ExpenseItem from "./ExpenseItem";
 import Appstyles from '../../../../app.scss';
-import Icon from 'react-native-vector-icons/AntDesign';
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { randomId } from "../../../../Utils";
+import Popover from "../../../../Components/Popover";
+import AddExpense from "./AddExpense";
+import { deleteDoc, doc } from "firebase/firestore";
+import { FirebaseDB } from "../../../../firebaseConfig";
+import { StyleSheet } from "react-native-web";
+import { EventContext } from "../../../../EventProvider/EventProvider";
 
-const Expenses = ({ data }) => {
-
-	const [expenses, setExpenses] = useState(data.expenseList || []);
+const Expenses = ({ data, changeListener }) => {
+	const [expenses, setExpenses] = useState([]);
+	const [members, setMembers] = useState([]);
 	const [expenseShortDetails, setExpenseShortDetails] = useState({});
-
-	const changeHandler = (val, name, index) => {
-		const copyExpenses = [...expenses];
-		copyExpenses[index][name] = val;
-		setExpenses(copyExpenses);
+	const eventStore = useContext(EventContext);
+	const expenseObj = {
+		id: randomId(),
+		name: '',
+		date: new Date(),
+		amount: '',
+		paidBy: ''
 	}
-	const removeHandler = (index) => {
-		const copyExpenses = [...expenses];
-		copyExpenses.splice(index, 1);
-		setExpenses(copyExpenses);
+
+	const removeHandler = async (id) => {
+		Alert.alert('Do you want to delete?', '', [
+			{
+				text: 'Cancel',
+				onPress: () => console.log('Cancel Pressed'),
+				style: 'cancel',
+			},
+			{ text: 'Yes', onPress: () => deleteExpenseDoc() },
+		]);
+
+		const deleteExpenseDoc = async () => {
+			try {
+				await deleteDoc(doc(FirebaseDB, "trips", data.id, "expenseList", id)).then(res => {
+					console.log(res);
+				}).catch(err => {
+					console.log(err);
+				});
+			} catch (error) {
+				console.log(error);
+			}
+		};
 	};
-	const addExpense = () => {
-		const expenseObj = {
-			id: randomId(),
-			name: '',
-			date: new Date(),
-			amount: 0,
-			paidBy: ''
-		}
-		setExpenses([...expenses, expenseObj])
+
+	const watchExpense = async () => {
+		// await eventStore.watchExpenses(data.id);
+		// setExpenses(eventStore.eventDetails.expenses)
+	};
+	const watchMembers = async () => {
+		await eventStore.watchMembers(data.id);
+		setMembers(eventStore.eventDetails.expenses)
 	};
 
 	useEffect(() => {
-		if (expenses.length) {
+		if (eventStore?.eventDetails?.expenses?.length) {
+			setExpenses(eventStore.eventDetails.expenses)
+		}
+		if (eventStore?.eventDetails?.members?.length) {
+			setMembers(eventStore.eventDetails.members)
+		}
+		console.log('eventStore.eventDetails');
+	}, [eventStore]);
+
+	useEffect(() => {
+		if (expenses?.length) {
 			const subtotal = expenses.map(item => item.amount).reduce((prev, next) => prev + next);
-			const perHead = subtotal / (data.members.length);
+			const perHead = subtotal / (members.length);
 			setExpenseShortDetails({ subtotal, perHead })
 		}
-	}, [expenses]);
+	}, [expenses, members]);
 
 	return (
-		<ScrollView style={Appstyles.ExpenseContainer}>
-			<FlatList
-				data={expenses}
-				renderItem={({ item, index }) => <ExpenseItem data={item} handleValueChange={(val, name) => changeHandler(val, name, index)} removeExpense={() => removeHandler(index)} />}
-				keyExtractor={item => item.id}
-			/>
-			<Pressable
-				style={[Appstyles.flex_direction_row, Appstyles.p_15, Appstyles.align_items_center]}
-				onPress={addExpense}>
-				<Icon
-					name="plus"
-					size={20}
-					color="#000"
+		<View style={styles.container}>
+			<ScrollView style={Appstyles.ExpenseContainer}>
+				<FlatList
+					data={expenses}
+					renderItem={({ item }) => <ExpenseItem data={item} removeExpense={(id) => removeHandler(id)} />}
+					keyExtractor={item => item.id}
 				/>
-				<Text style={Appstyles.ml_10}>Expense</Text>
-			</Pressable>
-			<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_between, Appstyles.p_15]}>
-				<Text>Subtotal:</Text>
-				<Text>{expenseShortDetails.subtotal}</Text>
-			</View>
-			<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_between, Appstyles.p_15]}>
-				<Text>Per Head:</Text>
-				<Text>{expenseShortDetails.perHead}</Text>
-			</View>
-		</ScrollView>
+				{expenses?.length != 0 ? (
+					<>
+						<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_between, Appstyles.p_15]}>
+							<Text>Subtotal:</Text>
+							<Text>{expenseShortDetails.subtotal}</Text>
+						</View>
+						<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_between, Appstyles.p_15]}>
+							<Text>Per Head:</Text>
+							<Text>{expenseShortDetails.perHead}</Text>
+						</View>
+					</>
+				) : (
+					<Text style={Appstyles.p_15}>Add your Expenses</Text>
+				)}
+			</ScrollView>
+			<Popover
+				title="Add Expense"
+				content={<AddExpense documentId={data.id} members={members} watchExpense={watchExpense} />} />
+		</View>
 	)
 }
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		paddingBottom: 20,
+	},
+})
 
 export default Expenses;

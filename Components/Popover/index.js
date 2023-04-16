@@ -7,11 +7,6 @@ import Appstyles from '../../app.scss';
 const Popover = (props) => {
 	const [modalVisible, setModalVisible] = useState(false);
 
-	useEffect(() => {
-		document.addEventListener("closeAddTripPopup", () => {
-			setModalVisible(false)
-		});
-	}, []);
 	return (
 		<>
 			<Modal

@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FlatList, Pressable, ScrollView, Text } from "react-native"
 import { randomId } from "../../../../Utils";
 import Member from "./Member";
 import Icon from 'react-native-vector-icons/AntDesign';
 import Appstyles from '../../../../app.scss';
+import { EventContext } from "../../../../EventProvider/EventProvider";
 
 const Members = ({ data, setUpdateMember, isRequiredError }) => {
-	const [members, setMembers] = useState(data);
+	const [members, setMembers] = useState([]);
+	const eventStore = useContext(EventContext);
 
 	const changeHandler = (val, index) => {
 		const copyMembers = [...members];
@@ -36,6 +38,9 @@ const Members = ({ data, setUpdateMember, isRequiredError }) => {
 	const isLastMember = (e) => {
 		return members.length == 1;
 	};
+	useEffect(() => {
+		setMembers(eventStore.eventDetails.members)
+	}, [eventStore]);
 	return (
 		<ScrollView>
 			<FlatList

@@ -20,7 +20,6 @@ const Dashboard = () => {
 			await onSnapshot(dbQuery, (querySnapshot) => {
 				const trips = [];
 				querySnapshot.forEach((doc) => {
-					// console.log(doc.data());
 					const obj = { ...doc.data() }
 					obj.id = doc.id;
 					trips.push(obj)

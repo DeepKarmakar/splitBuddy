@@ -6,7 +6,7 @@ import FormField from '../../../Components/FormInputs/FormField';
 import { formData } from '../../../Components/FormInputs/formData';
 import Members from "../../Details/Components/Members/Members";
 import * as ImagePicker from 'expo-image-picker';
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, writeBatch } from "firebase/firestore";
 import { Firebase, FirebaseDB } from "../../../firebaseConfig";
 import { getAuth } from "firebase/auth";
 import { randomId } from "../../../Utils";
@@ -71,10 +71,8 @@ const AddTrip = () => {
 		}
 
 		const data = { ...formValues };
-		data.members = members;
 		data.uid = currentUserId;
 		data.date = serverTimestamp()
-		data.expenseList = [];
 		data.coverImage = coverImg;
 		addFirebaseDoc(data)
 	}
@@ -98,12 +96,20 @@ const AddTrip = () => {
 
 		try {
 			const docRef = await addDoc(collection(FirebaseDB, "trips"), data);
+
+			// Add Members
+			const membersCollection = collection(FirebaseDB, "trips", docRef.id, "members");
+			members.forEach(async (data) => {
+				try {
+					await addDoc(membersCollection, { name: data.name })
+				} catch (error) {
+					console.log("members add error", error);
+				}
+			});
+
 		} catch (e) {
 			console.error("Error adding document: ", e);
 		} finally {
-			// Create the event
-			var event = new CustomEvent("closeAddTripPopup");
-			document.dispatchEvent(event);
 			clearForm()
 		}
 	}
