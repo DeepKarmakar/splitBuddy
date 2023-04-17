@@ -2,34 +2,37 @@ import { View, Text, StyleSheet } from "react-native";
 import Appstyles from '../../../../app.scss';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import { GetDate } from "../../../../Utils";
+import { Pressable } from "react-native-web";
 
-const ExpenseItem = ({ data, removeExpense }) => {
+const ExpenseItem = ({ data, removeExpense, updateExpense }) => {
 
 	const { name, paidBy, date, amount, id } = data;
 
 	return (
-		<View style={[Appstyles.expenseItemContainer, Appstyles.p_15, styles.borderBottom]}>
-			<View style={[Appstyles.inbetween_content]}>
-				<Text
-					style={[Appstyles.formFieldText, Appstyles.flex_1, Appstyles.p_b_10]}>
-					{name}
-				</Text>
-				<Icon
-					name="trash"
-					size={20}
-					color="#000"
-					onPress={() => removeExpense(id)}
-				/>
+		<Pressable onPress={() => updateExpense(data)}>
+			<View style={[Appstyles.expenseItemContainer, Appstyles.p_15, styles.borderBottom]}>
+				<View style={[Appstyles.inbetween_content]}>
+					<Text
+						style={[Appstyles.formFieldText, Appstyles.flex_1, Appstyles.p_b_10]}>
+						{name}
+					</Text>
+					<Icon
+						name="trash"
+						size={20}
+						color="#000"
+						onPress={(e) => removeExpense(e, id)}
+					/>
+				</View>
+				<View style={[Appstyles.flex_direction_row, Appstyles.align_items_center]}>
+					<Text style={[Appstyles.color_grey, styles.paidByWidth]}>{paidBy.name}</Text>
+					<Text style={[Appstyles.color_grey, Appstyles.flex_1]}>{GetDate(date)}</Text>
+					<Text
+						style={[Appstyles.formFieldText, Appstyles.flex_1, Appstyles.p_0, Appstyles.m_0, Appstyles.width_100, Appstyles.text_right]}>
+						{amount}
+					</Text>
+				</View>
 			</View>
-			<View style={[Appstyles.flex_direction_row, Appstyles.align_items_center]}>
-				<Text style={[Appstyles.color_grey, styles.paidByWidth]}>{paidBy.name}</Text>
-				<Text style={[Appstyles.color_grey, Appstyles.flex_1]}>{GetDate(date)}</Text>
-				<Text
-					style={[Appstyles.formFieldText, Appstyles.flex_1, Appstyles.p_0, Appstyles.m_0, Appstyles.width_100, Appstyles.text_right]}>
-					{amount}
-				</Text>
-			</View>
-		</View>
+		</Pressable>
 	)
 }
 

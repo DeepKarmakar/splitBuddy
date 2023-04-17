@@ -2,14 +2,15 @@ import { View, Text, StyleSheet, TextInput, Pressable, ToastAndroid } from "reac
 import Appstyles from '../../../../app.scss';
 import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown';
-import { useContext, useState } from "react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useContext, useEffect, useState } from "react";
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { FirebaseDB } from "../../../../firebaseConfig";
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { EventContext } from "../../../../EventProvider/EventProvider";
+import { GetDate } from "../../../../Utils";
 
 
-const AddExpense = ({ documentId, members, watchExpense }) => {
+const AddExpense = ({ documentId, members, isUpdate, data }) => {
 	const [expenses, setExpenses] = useState({
 		name: '',
 		date: new Date(),
@@ -39,23 +40,43 @@ const AddExpense = ({ documentId, members, watchExpense }) => {
 		});
 	};
 
+	useEffect(() => {
+		if (isUpdate) {
+			setExpenses(data)
+		}
+	}, [isUpdate])
+
 	const handAddExpense = async () => {
 		if (!isValidForm()) {
 			return
 		}
-		const expenseCollection = collection(FirebaseDB, "trips", documentId, "expenseList")
 		try {
 			const addExpenseDoc = new Promise(async (resolve, reject) => {
-				await addDoc(expenseCollection, expenses).then(res => {
-					setExpenses({
-						name: '',
-						date: serverTimestamp(),
-						amount: '',
-						paidBy: ''
+				if (isUpdate) {
+					const expenseDoc = doc(FirebaseDB, "trips", documentId, "expenseList", data.id)
+					await updateDoc(expenseDoc, expenses).then(res => {
+						setExpenses({
+							name: '',
+							date: serverTimestamp(),
+							amount: '',
+							paidBy: ''
+						})
+						// watchExpense()
+						eventStore.setEventDetails({ ...eventStore.eventDetails, test: 'hello' });
 					})
-					// watchExpense()
-					eventStore.setEventDetails({ ...eventStore.eventDetails, test: 'hello' });
-				})
+				} else {
+					const expenseCollection = collection(FirebaseDB, "trips", documentId, "expenseList")
+					await addDoc(expenseCollection, expenses).then(res => {
+						setExpenses({
+							name: '',
+							date: serverTimestamp(),
+							amount: '',
+							paidBy: ''
+						})
+						// watchExpense()
+						eventStore.setEventDetails({ ...eventStore.eventDetails, test: 'hello' });
+					})
+				}
 			})
 			addExpenseDoc.then(res => {
 				// ToastAndroid.show('Expense Added! PLease close Popup by yourself :)', ToastAndroid.SHORT);
@@ -100,6 +121,7 @@ const AddExpense = ({ documentId, members, watchExpense }) => {
 				<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_between, styles.borderBottom, Appstyles.align_items_center, Appstyles.mt_10, Appstyles.p_b_10]}>
 					<SelectDropdown
 						defaultButtonText="Select Member"
+						defaultValue={isUpdate ? expenses.paidBy : ''}
 						data={members}
 						onSelect={(selectedItem, index) => {
 							console.log(selectedItem, index)
@@ -122,7 +144,9 @@ const AddExpense = ({ documentId, members, watchExpense }) => {
 						rowTextStyle={{ fontSize: 14 }}
 					/>
 					<Pressable onPress={showDatepicker}>
-						<Text style={Appstyles.color_grey}>{moment(expenses.date).format('DD/MM/YYYY')}</Text>
+						<Text style={Appstyles.color_grey}>
+							{isUpdate ? GetDate(expenses.date) : moment(expenses.date).format('DD/MM/YYYY')}
+						</Text>
 					</Pressable>
 				</View>
 				{requiredError.paidBy && <Text style={[Appstyles.error_text_color, Appstyles.mt_5]}>Member name is required</Text>}
@@ -139,7 +163,7 @@ const AddExpense = ({ documentId, members, watchExpense }) => {
 				</View>
 			</View>
 			<Pressable style={[Appstyles.button, Appstyles.mt_10, Appstyles.flex_direction_row, Appstyles.gap_10]} onPress={handAddExpense}>
-				<Text style={Appstyles.buttonText}>Add</Text>
+				<Text style={Appstyles.buttonText}>{isUpdate ? 'Update' : 'Add'}</Text>
 				{/* <ActivityIndicator animating={loading} color="#fff" style={styles.loginLoader} /> */}
 			</Pressable>
 

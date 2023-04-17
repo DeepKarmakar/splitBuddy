@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import Appstyles from '../../../../app.scss';
 import { EventContext } from "../../../../EventProvider/EventProvider";
 
-const Members = ({ data, setUpdateMember, isRequiredError }) => {
+const Members = ({ data, setUpdateMember, isRequiredError, isUpdate }) => {
 	const [members, setMembers] = useState([]);
 	const eventStore = useContext(EventContext);
 
@@ -39,7 +39,11 @@ const Members = ({ data, setUpdateMember, isRequiredError }) => {
 		return members.length == 1;
 	};
 	useEffect(() => {
-		setMembers(eventStore.eventDetails.members)
+		if (isUpdate) {
+			setMembers(eventStore.eventDetails.members)
+		} else {
+			setMembers(data)
+		}
 	}, [eventStore]);
 	return (
 		<ScrollView>

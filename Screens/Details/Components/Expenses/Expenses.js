@@ -2,7 +2,6 @@ import { Alert, FlatList, ScrollView, Text, View } from "react-native"
 import ExpenseItem from "./ExpenseItem";
 import Appstyles from '../../../../app.scss';
 import { useContext, useEffect, useState } from "react";
-import { randomId } from "../../../../Utils";
 import Popover from "../../../../Components/Popover";
 import AddExpense from "./AddExpense";
 import { deleteDoc, doc } from "firebase/firestore";
@@ -15,15 +14,11 @@ const Expenses = ({ data, changeListener }) => {
 	const [members, setMembers] = useState([]);
 	const [expenseShortDetails, setExpenseShortDetails] = useState({});
 	const eventStore = useContext(EventContext);
-	const expenseObj = {
-		id: randomId(),
-		name: '',
-		date: new Date(),
-		amount: '',
-		paidBy: ''
-	}
+	const [isUpdateExpense, setIsUpdateExpense] = useState(false);
+	const [updateItem, setUpdateItem] = useState({})
 
-	const removeHandler = async (id) => {
+	const removeHandler = async (event, id) => {
+		event.stopPropagation();
 		Alert.alert('Do you want to delete?', '', [
 			{
 				text: 'Cancel',
@@ -46,13 +41,14 @@ const Expenses = ({ data, changeListener }) => {
 		};
 	};
 
-	const watchExpense = async () => {
-		// await eventStore.watchExpenses(data.id);
-		// setExpenses(eventStore.eventDetails.expenses)
+	const updateExpenseHandler = (data) => {
+		setIsUpdateExpense(true)
+		setUpdateItem(data)
 	};
-	const watchMembers = async () => {
-		await eventStore.watchMembers(data.id);
-		setMembers(eventStore.eventDetails.expenses)
+
+	const closePopupHandler = () => {
+		setIsUpdateExpense(false)
+		setUpdateItem({})
 	};
 
 	useEffect(() => {
@@ -62,7 +58,7 @@ const Expenses = ({ data, changeListener }) => {
 		if (eventStore?.eventDetails?.members?.length) {
 			setMembers(eventStore.eventDetails.members)
 		}
-		console.log('eventStore.eventDetails');
+		console.log("set called");
 	}, [eventStore]);
 
 	useEffect(() => {
@@ -78,7 +74,7 @@ const Expenses = ({ data, changeListener }) => {
 			<ScrollView style={Appstyles.ExpenseContainer}>
 				<FlatList
 					data={expenses}
-					renderItem={({ item }) => <ExpenseItem data={item} removeExpense={(id) => removeHandler(id)} />}
+					renderItem={({ item }) => <ExpenseItem data={item} removeExpense={(id) => removeHandler(id)} updateExpense={updateExpenseHandler} />}
 					keyExtractor={item => item.id}
 				/>
 				{expenses?.length != 0 ? (
@@ -98,7 +94,16 @@ const Expenses = ({ data, changeListener }) => {
 			</ScrollView>
 			<Popover
 				title="Add Expense"
-				content={<AddExpense documentId={data.id} members={members} watchExpense={watchExpense} />} />
+				content={
+					<AddExpense
+						documentId={data.id}
+						members={members}
+						isUpdate={isUpdateExpense}
+						data={updateItem} />
+				}
+				isVisible={isUpdateExpense}
+				onClosePopup={closePopupHandler}
+			/>
 		</View>
 	)
 }

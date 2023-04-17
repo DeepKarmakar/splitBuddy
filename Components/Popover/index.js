@@ -4,8 +4,23 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import AddTrip from '../../Screens/Dashboard/Components/AddTrip';
 import Appstyles from '../../app.scss';
 
-const Popover = (props) => {
+const Popover = ({ title, content, isVisible, onClosePopup }) => {
 	const [modalVisible, setModalVisible] = useState(false);
+
+	const closeModal = () => {
+		setModalVisible(!modalVisible);
+		if (isVisible) {
+			onClosePopup();
+		}
+	};
+
+	useEffect(() => {
+		if (isVisible) {
+			setModalVisible(true)
+		}
+
+	}, [isVisible])
+
 
 	return (
 		<>
@@ -22,9 +37,9 @@ const Popover = (props) => {
 				<View style={styles.centeredView}>
 					<View style={[styles.modalView]}>
 						<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_between, Appstyles.full_width, Appstyles.divider, Appstyles.p_15, Appstyles.mb_10, styles.borderBottomDashed]}>
-							<Text style={[styles.modalText]}>{props.title}</Text>
+							<Text style={[styles.modalText]}>{title}</Text>
 							<Pressable
-								onPress={() => setModalVisible(!modalVisible)}>
+								onPress={closeModal}>
 								<Icon
 									name="close"
 									size={20}
@@ -32,7 +47,7 @@ const Popover = (props) => {
 								/>
 							</Pressable>
 						</View>
-						{props.content}
+						{content}
 					</View>
 				</View>
 			</Modal>

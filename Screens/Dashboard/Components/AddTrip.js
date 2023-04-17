@@ -66,9 +66,10 @@ const AddTrip = () => {
 			alert("Image is uploading");
 			return
 		}
-		if (!isValidForm()) {
+		if (isInValidForm()) {
 			return
 		}
+		console.log(isInValidForm(), ' validation false');
 
 		const data = { ...formValues };
 		data.uid = currentUserId;
@@ -77,10 +78,10 @@ const AddTrip = () => {
 		addFirebaseDoc(data)
 	}
 
-	const isValidForm = () => {
+	const isInValidForm = () => {
 
 		// title Validation
-		let isInValidTitle = formValues.title.trim().length == '';
+		let isInValidTitle = formValues.title.trim() == '';
 
 		// Members Validation
 		let isInValidMember = members.every(member => {
@@ -89,7 +90,7 @@ const AddTrip = () => {
 
 		setRequiredError({ title: isInValidTitle, members: isInValidMember });
 
-		return (!isInValidMember && !isInValidMember);
+		return (isInValidTitle || isInValidMember);
 	};
 
 	const addFirebaseDoc = async (data) => {
@@ -171,6 +172,7 @@ const AddTrip = () => {
 				<Members
 					data={members}
 					setUpdateMember={setMembers}
+					isUpdate={false}
 					isRequiredError={requiredError.members} />
 			</View>
 			<Button
