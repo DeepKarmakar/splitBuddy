@@ -66,6 +66,9 @@ const AddExpense = ({ documentId, members, isUpdate, data }) => {
 					})
 				} else {
 					const expenseCollection = collection(FirebaseDB, "trips", documentId, "expenseList")
+					const membeDocRef = doc(FirebaseDB, "trips", documentId, "members", expenses.paidBy.id)
+					expenses.paidBy = membeDocRef;
+					console.log(expenses);
 					await addDoc(expenseCollection, expenses).then(res => {
 						setExpenses({
 							name: '',
@@ -73,7 +76,7 @@ const AddExpense = ({ documentId, members, isUpdate, data }) => {
 							amount: '',
 							paidBy: ''
 						})
-						// watchExpense()
+						eventStore.watchExpenses()
 						eventStore.setEventDetails({ ...eventStore.eventDetails, test: 'hello' });
 					})
 				}

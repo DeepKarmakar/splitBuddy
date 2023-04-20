@@ -11,7 +11,7 @@ const renderScene = ({ route, jumpTo }) => {
 		case 'expenses':
 			return <Expenses data={route.data} />;
 		case 'members':
-			return <Members data={route.data} />;
+			return <Members data={route.data} isUpdate={true} />;
 		case 'summary':
 			return <Summary data={route.data} />;
 	}

@@ -52,13 +52,16 @@ const Expenses = ({ data, changeListener }) => {
 	};
 
 	useEffect(() => {
-		if (eventStore?.eventDetails?.expenses?.length) {
-			setExpenses(eventStore.eventDetails.expenses)
-		}
-		if (eventStore?.eventDetails?.members?.length) {
-			setMembers(eventStore.eventDetails.members)
-		}
-		console.log("set called");
+		// need to work on this settimeout
+		setTimeout(() => {
+			if (eventStore?.eventDetails?.expenses?.length) {
+				setExpenses(eventStore.eventDetails.expenses)
+			}
+			if (eventStore?.eventDetails?.members?.length) {
+				setMembers(eventStore.eventDetails.members)
+			}
+			console.log("set called", eventStore.eventDetails.expenses);
+		}, 500);
 	}, [eventStore]);
 
 	useEffect(() => {

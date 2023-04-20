@@ -4,7 +4,7 @@ import { DummyTrip } from '../../../assets/images';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { EventContext } from "../../../EventProvider/EventProvider";
 
 
@@ -24,27 +24,32 @@ const Card = ({ data }) => {
 		const copyData = data;
 		copyData.expenses = [];
 		copyData.members = [];
-
-		const promise1 = new Promise(async (resolve, reject) => {
-			await eventStore.setEventDetails(copyData);
-			resolve()
-		})
-		const promise2 = new Promise(async (resolve, reject) => {
+		copyData.tripDetailsLoading = true;
+		await eventStore.setEventDetails(copyData);
+		const expensePromise = new Promise(async (resolve, reject) => {
 			await eventStore.watchExpenses(data.id);
 			resolve()
 		})
-		const promise3 = new Promise(async (resolve, reject) => {
+		const membersPromise = new Promise(async (resolve, reject) => {
 			await eventStore.watchMembers(data.id);
 			resolve()
 		})
 
-		const allPromise = Promise.all([promise1, promise2, promise3]);
+		const allPromise = Promise.all([expensePromise, membersPromise]);
 		allPromise.then(() => {
-			navigation.navigate('Details', data)
+			console.log('all done');
 		}).catch(error => {
 			console.log(error);
 		})
 	};
+	useEffect(() => {
+		if (eventStore.eventDetails.hasOwnProperty('tripDetailsLoading') && !eventStore.eventDetails.tripDetailsLoading) {
+			console.log("done");
+			navigation.navigate('Details', data)
+		}
+
+	}, [eventStore.eventDetails])
+
 
 	return (
 		<TouchableOpacity
