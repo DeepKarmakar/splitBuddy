@@ -59,6 +59,7 @@ const EventProvider = (props) => {
 				await querySnapshot.forEach((snapshotDoc) => {
 					const obj = { ...snapshotDoc.data() }
 					obj.id = snapshotDoc.id;
+					obj.isDbData = true;
 					membersCopy.push(obj);
 				});
 				const copyData = eventDetails;

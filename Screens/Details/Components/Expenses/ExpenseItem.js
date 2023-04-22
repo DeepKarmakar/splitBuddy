@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import Appstyles from '../../../../app.scss';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import { GetDate } from "../../../../Utils";
-import { Pressable } from "react-native-web";
 
 const ExpenseItem = ({ data, removeExpense, updateExpense }) => {
 

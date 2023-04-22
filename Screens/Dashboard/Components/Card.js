@@ -26,11 +26,11 @@ const Card = ({ data }) => {
 		copyData.members = [];
 		copyData.tripDetailsLoading = true;
 		await eventStore.setEventDetails(copyData);
-		const expensePromise = new Promise(async (resolve, reject) => {
+		const expensePromise = await new Promise(async (resolve, reject) => {
 			await eventStore.watchExpenses(data.id);
 			resolve()
 		})
-		const membersPromise = new Promise(async (resolve, reject) => {
+		const membersPromise = await new Promise(async (resolve, reject) => {
 			await eventStore.watchMembers(data.id);
 			resolve()
 		})

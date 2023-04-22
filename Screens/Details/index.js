@@ -23,7 +23,7 @@ const Details = ({ route, navigation }) => {
 	const [index, setIndex] = React.useState(0);
 	const [routes] = React.useState([
 		{ key: 'expenses', title: 'Expenses', data },
-		{ key: 'members', title: 'Members', data: data.members },
+		{ key: 'members', title: 'Members', data: data },
 		{ key: 'summary', title: 'Summary', data: getSummaryData() },
 	]);
 

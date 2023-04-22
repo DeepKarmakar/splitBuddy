@@ -31,7 +31,7 @@ const Expenses = ({ data, changeListener }) => {
 		const deleteExpenseDoc = async () => {
 			try {
 				await deleteDoc(doc(FirebaseDB, "trips", data.id, "expenseList", id)).then(res => {
-					console.log(res);
+					alert("Expense deleted")
 				}).catch(err => {
 					console.log(err);
 				});
@@ -77,7 +77,7 @@ const Expenses = ({ data, changeListener }) => {
 			<ScrollView style={Appstyles.ExpenseContainer}>
 				<FlatList
 					data={expenses}
-					renderItem={({ item }) => <ExpenseItem data={item} removeExpense={(id) => removeHandler(id)} updateExpense={updateExpenseHandler} />}
+					renderItem={({ item }) => <ExpenseItem data={item} removeExpense={removeHandler} updateExpense={updateExpenseHandler} />}
 					keyExtractor={item => item.id}
 				/>
 				{expenses?.length != 0 ? (

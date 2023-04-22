@@ -5,8 +5,12 @@ import Member from "./Member";
 import Icon from 'react-native-vector-icons/AntDesign';
 import Appstyles from '../../../../app.scss';
 import { EventContext } from "../../../../EventProvider/EventProvider";
+import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { FirebaseDB } from "../../../../firebaseConfig";
+import { useNavigation } from '@react-navigation/native';
 
 const Members = ({ data, setUpdateMember, isRequiredError, isUpdate }) => {
+	const navigation = useNavigation();
 	const [members, setMembers] = useState([]);
 	const eventStore = useContext(EventContext);
 
@@ -21,7 +25,20 @@ const Members = ({ data, setUpdateMember, isRequiredError, isUpdate }) => {
 		// 	addMembers();
 		// }
 	}
-	const removeHandler = (index) => {
+	const removeHandler = (index, id) => {
+		if (!isUpdate) {
+			localRemove(index)
+		} else {
+			if (members[index].isDraft) {
+				localRemove(index)
+			}
+			else {
+				removeFromDb(id)
+			}
+		}
+	};
+
+	const localRemove = (index) => {
 		const copyMembers = [...members];
 		copyMembers.splice(index, 1)
 		setMembers(copyMembers)
@@ -29,21 +46,53 @@ const Members = ({ data, setUpdateMember, isRequiredError, isUpdate }) => {
 			setUpdateMember(copyMembers)
 		}
 	};
+	const removeFromDb = async (memberId) => {
+		const memberDoc = doc(FirebaseDB, "trips", data.id, "members", memberId);
+		await deleteDoc(memberDoc).then(() => {
+			alert("Member deleted")
+		});
+		navigation.navigate('Dashboard')
+	};
 	const isLastItem = (index) => {
 		return members.length === index + 1;
 	};
 	const addMembers = () => {
-		setMembers([...members, { name: '', id: randomId() }])
+		setMembers([...members, { name: '', id: randomId(), isDraft: isUpdate || false }])
 	};
 	const isLastMember = (e) => {
 		return members.length == 1;
+	};
+	const addNewMemberToDb = async (name) => {
+		if (name.length) {
+			const membersCollection = collection(FirebaseDB, "trips", data.id, "members");
+			try {
+				const docRef = await addDoc(membersCollection, { name })
+				alert("Member added")
+				navigation.navigate('Dashboard')
+			} catch (error) {
+				console.log("members add error", error);
+			}
+		}
+	};
+	const updateNewMemberToDb = async (name, memberId) => {
+		if (name.length) {
+			const memberDoc = doc(FirebaseDB, "trips", data.id, "members", memberId);
+			try {
+				await updateDoc(memberDoc, { name })
+				alert("Member updated")
+				navigation.navigate('Dashboard')
+			} catch (error) {
+				console.log("members add error", error);
+			}
+		}
 	};
 	useEffect(() => {
 		if (isUpdate) {
 			setMembers(eventStore.eventDetails.members)
 		} else {
-			setMembers(data)
+			setMembers(data.members || [])
 		}
+		console.log(eventStore.eventDetails);
 	}, [eventStore]);
 	return (
 		<ScrollView>
@@ -52,9 +101,12 @@ const Members = ({ data, setUpdateMember, isRequiredError, isUpdate }) => {
 				renderItem={
 					({ item, index }) => <Member
 						data={item}
+						isUpdate={isUpdate}
 						handleValueChange={(val) => changeHandler(val, index)}
-						removeMember={() => removeHandler(index)}
-						isLastItem={isLastMember} />
+						removeMember={() => removeHandler(index, item.id)}
+						isLastItem={isLastMember}
+						addNewMemberToDb={addNewMemberToDb}
+						updateNewMemberToDb={updateNewMemberToDb} />
 				}
 				keyExtractor={item => item.id}
 			/>
