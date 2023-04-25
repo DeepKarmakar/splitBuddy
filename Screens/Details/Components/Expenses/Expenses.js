@@ -83,11 +83,11 @@ const Expenses = ({ data, changeListener }) => {
 				{expenses?.length != 0 ? (
 					<>
 						<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_between, Appstyles.p_15]}>
-							<Text>Subtotal:</Text>
+							<Text style={Appstyles.text_bold}>Subtotal:</Text>
 							<Text>{expenseShortDetails.subtotal}</Text>
 						</View>
 						<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_between, Appstyles.p_15]}>
-							<Text>Per Head:</Text>
+							<Text style={Appstyles.text_bold}>Per Head:</Text>
 							<Text>{expenseShortDetails.perHead}</Text>
 						</View>
 					</>
@@ -113,7 +113,7 @@ const Expenses = ({ data, changeListener }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		paddingBottom: 20,
+		paddingBottom: 50,
 	},
 })
 
