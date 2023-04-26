@@ -92,7 +92,7 @@ const Members = ({ data, setUpdateMember, isRequiredError, isUpdate }) => {
 		} else {
 			setMembers(data.members || [])
 		}
-		console.log(eventStore.eventDetails);
+		// console.log(eventStore.eventDetails);
 	}, [eventStore]);
 	return (
 		<ScrollView>

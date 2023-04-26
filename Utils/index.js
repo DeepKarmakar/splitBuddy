@@ -11,3 +11,8 @@ export const GetDate = (date) => {
 	}
 	return 'Invalid date'
 }
+
+export const roundOf = (val) => {
+	if (val && typeof (val) == 'number') return val.toFixed(2);
+	return val;
+}

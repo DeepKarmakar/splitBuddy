@@ -30,7 +30,7 @@ const EventProvider = (props) => {
 									const copyData = eventDetails;
 									copyData.expenses = expensesCopy;
 									setEventDetails(copyData)
-									console.log(copyData);
+									// console.log(copyData);
 								}
 								index++;
 							});

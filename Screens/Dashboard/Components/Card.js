@@ -37,14 +37,14 @@ const Card = ({ data }) => {
 
 		const allPromise = Promise.all([expensePromise, membersPromise]);
 		allPromise.then(() => {
-			console.log('all done');
+			// console.log('all done');
 		}).catch(error => {
 			console.log(error);
 		})
 	};
 	useEffect(() => {
 		if (eventStore.eventDetails.hasOwnProperty('tripDetailsLoading') && !eventStore.eventDetails.tripDetailsLoading) {
-			console.log("done");
+			// console.log("done");
 			navigation.navigate('Details', data)
 		}
 

@@ -8,6 +8,7 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { FirebaseDB } from "../../../../firebaseConfig";
 import { StyleSheet } from "react-native-web";
 import { EventContext } from "../../../../EventProvider/EventProvider";
+import { roundOf } from "../../../../Utils";
 
 const Expenses = ({ data, changeListener }) => {
 	const [expenses, setExpenses] = useState([]);
@@ -60,7 +61,7 @@ const Expenses = ({ data, changeListener }) => {
 			if (eventStore?.eventDetails?.members?.length) {
 				setMembers(eventStore.eventDetails.members)
 			}
-			console.log("set called", eventStore.eventDetails.expenses);
+			// console.log("set called", eventStore.eventDetails.expenses);
 		}, 500);
 	}, [eventStore]);
 
@@ -88,7 +89,7 @@ const Expenses = ({ data, changeListener }) => {
 						</View>
 						<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_between, Appstyles.p_15]}>
 							<Text style={Appstyles.text_bold}>Per Head:</Text>
-							<Text>{expenseShortDetails.perHead}</Text>
+							<Text>{roundOf(expenseShortDetails.perHead)}</Text>
 						</View>
 					</>
 				) : (
