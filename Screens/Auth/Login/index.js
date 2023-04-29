@@ -112,10 +112,10 @@ const Login = () => {
 						)}
 					</View>
 					<View style={[Appstyles.align_items_end, Appstyles.p_t_b_10]}>
-						<Pressable
+						{/* <Pressable
 							onPress={() => navigation.navigate('ForgotPassword')}>
 							<Text style={Appstyles.linkText}>Forgot Password?</Text>
-						</Pressable>
+						</Pressable> */}
 					</View>
 					<Pressable style={[Appstyles.button, Appstyles.flex_direction_row, Appstyles.gap_10]} onPress={handleLogin}>
 						<Text style={Appstyles.buttonText}>Login</Text>
@@ -125,12 +125,12 @@ const Login = () => {
 						<Text style={Appstyles.or_text}>OR</Text>
 						<View style={Appstyles.or_divider}></View>
 					</View>
-					<Pressable
+					{/* <Pressable
 						onPress={googleSignIn}
 						style={[Appstyles.button, Appstyles.googleButton, Appstyles.mb_20]}>
 						<Image source={GoogleIcon} style={styles.googleIcon} />
 						<Text style={[Appstyles.buttonText, Appstyles.googleButtonText]}>Login With Google</Text>
-					</Pressable>
+					</Pressable> */}
 					<View style={[Appstyles.flex_direction_row, Appstyles.align_items_center, Appstyles.justify_content_center]}>
 						<Text>New to SplitBuddy?</Text>
 						<Pressable
