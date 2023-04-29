@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { welcomeBkg } from '../../../assets/images';
 import Appstyles from '../../../app.scss';
@@ -14,9 +14,11 @@ const Register = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const navigation = useNavigation();
+	const [loading, setLoading] = useState(false);
 
 	const handleSignUp = async () => {
 		if (isValidUser()) {
+			setLoading(true)
 			try {
 				const res = await createUserWithEmailAndPassword(Auth, email, password);
 				const user = res.user;
@@ -26,6 +28,8 @@ const Register = () => {
 			} catch (err) {
 				console.error(err);
 				alert(err.message);
+			} finally {
+				setLoading(false)
 			}
 		}
 	};
@@ -128,7 +132,8 @@ const Register = () => {
 						)}
 					</View>
 					<Pressable style={[Appstyles.button, Appstyles.mt_20]} onPress={handleSignUp}>
-						<Text style={Appstyles.buttonText}>Continue</Text>
+						<Text style={Appstyles.buttonText}>Register</Text>
+						<ActivityIndicator animating={loading} color="#fff" style={styles.loginLoader} />
 					</Pressable>
 					<View style={[Appstyles.flex_direction_row, Appstyles.align_items_center, Appstyles.justify_content_center, Appstyles.mt_20]}>
 						<Text>Joined us before?</Text>
@@ -187,6 +192,10 @@ const styles = StyleSheet.create({
 		right: 0,
 		bottom: 3,
 		zIndex: 1
+	},
+	loginLoader: {
+		position: 'absolute',
+		right: 20
 	}
 });
 
