@@ -24,13 +24,18 @@
 			"**/*"
 		],
 		"ios": {
-			"supportsTablet": true
+			"supportsTablet": true,
+			"bundleIdentifier": "deepkarmakar.splitBuddy.ios"
 		},
 		"android": {
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/adaptive-icon.png",
 				"backgroundColor": "#ffffff"
-			}
+			},
+			"permissions": [
+				"android.permission.RECORD_AUDIO"
+			],
+			"package": "deepkarmakar.splitBuddy"
 		},
 		"web": {
 			"favicon": "./assets/favicon.png",
@@ -43,6 +48,11 @@
 					"photosPermission": "The app accesses your photos to let you share them with your friends."
 				}
 			]
-		]
+		],
+		"extra": {
+			"eas": {
+				"projectId": "32a5c641-472c-4fbb-ac93-2a9a0f1cf0b3"
+			}
+		}
 	}
 }

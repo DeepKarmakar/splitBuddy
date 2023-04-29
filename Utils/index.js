@@ -13,6 +13,6 @@ export const GetDate = (date) => {
 }
 
 export const roundOf = (val) => {
-	if (val && typeof (val) == 'number') return val.toFixed(2);
+	if (val && typeof (val) == 'number') return val.toFixed(0);
 	return val;
 }

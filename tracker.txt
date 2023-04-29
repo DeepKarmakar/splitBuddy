@@ -1,0 +1,31 @@
+Auth:
+---------
+keep user logged in issue
+remove login unfunctional element
+
+
+Dashboard:
+---------
+order by not working in dashboard
+
+
+Expense:
+---------
+Add icon position
+Update
+Modal has been closed
+delete icon space increase
+update expense redirect dashboard
+
+
+Members:
+---------
+focus after edit
+after update redirect dashboard
+after add redirect dashboard
+
+
+Summary:
+---------
+expense summary order by expense amount
+hold summary details in db and track checkbox once settle

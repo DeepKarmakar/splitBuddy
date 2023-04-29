@@ -47,7 +47,7 @@ const Member = ({ data, isUpdate, handleValueChange, removeMember, isLastItem, a
 					name="check"
 					size={25}
 					color={name.length ? '#000' : '#ddd'}
-					onPress={() => updateNewMemberToDb(name, id)}
+					onPress={() => { updateNewMemberToDb(name, id); editHandler() }}
 					style={styles.iconMargin}
 				/>
 			)}
@@ -65,7 +65,7 @@ const Member = ({ data, isUpdate, handleValueChange, removeMember, isLastItem, a
 					name="check"
 					size={25}
 					color={name.length ? '#000' : '#ddd'}
-					onPress={() => addNewMemberToDb(name)}
+					onPress={() => { setEditable(true); addNewMemberToDb(name); }}
 					style={styles.iconMargin}
 				/>
 			)}

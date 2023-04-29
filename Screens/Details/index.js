@@ -1,7 +1,11 @@
-import * as React from 'react';
+import { collection, doc, getDoc, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { useContext, useEffect, useState } from 'react';
+// import * as React from 'react';
 import { useWindowDimensions } from 'react-native';
 import { TabView } from 'react-native-tab-view';
 import Popover from '../../Components/Popover';
+import { EventContext } from '../../EventProvider/EventProvider';
+import { FirebaseDB } from '../../firebaseConfig';
 import Expenses from './Components/Expenses/Expenses';
 import Members from './Components/Members/Members';
 import Summary from './Components/Summary/Summary';
@@ -18,23 +22,104 @@ const renderScene = ({ route, jumpTo }) => {
 };
 
 const Details = ({ route, navigation }) => {
+	const [eventDetails, setEventDetails] = useState({});
+	const [members, setMembers] = useState([]);
+	const eventStore = useContext(EventContext);
+
 	const data = route.params;
 	const layout = useWindowDimensions();
-	const [index, setIndex] = React.useState(0);
-	const [routes] = React.useState([
-		{ key: 'expenses', title: 'Expenses', data },
-		{ key: 'members', title: 'Members', data: data },
-		{ key: 'summary', title: 'Summary', data: getSummaryData() },
-	]);
+	const [index, setIndex] = useState(0);
+	const [routes, setRoutes] = useState([]);
+
+	useEffect(() => {
+
+		const fetchExpense = async () => {
+			const expenseCollection = query(collection(FirebaseDB, "trips", data.id, "expenseList"), orderBy('date', "desc"))
+			await onSnapshot(expenseCollection, async (querySnapshot) => {
+				if (querySnapshot.size > 0) {
+					let index = 1;
+					const expensesCopy = [];
+					await querySnapshot.forEach(async (snapshotDoc) => {
+						const obj = { ...snapshotDoc.data() }
+						const membeDocRef = doc(FirebaseDB, "trips", data.id, "members", obj.paidBy.id)
+						try {
+							await getDoc(membeDocRef).then(async memberSnapshot => {
+								if (memberSnapshot?.id) {
+									obj.paidBy = await memberSnapshot.data();
+									if (obj.paidBy) {
+
+										obj.paidBy.id = memberSnapshot.id;
+										obj.id = snapshotDoc.id;
+										expensesCopy.push(obj);
+										if (index == querySnapshot.size) {
+											const copyData = eventDetails;
+											copyData.expenses = expensesCopy;
+											setEventDetails(copyData)
+											console.log('expensesCopy', expensesCopy);
+
+											const newEeventDetails = eventStore.eventDetails;
+											newEeventDetails.expenses = expensesCopy;
+											eventStore.setEventDetails(newEeventDetails)
+										}
+									}
+								}
+								index++;
+							});
+						} catch (error) {
+							console.log(error)
+						}
+					});
+				} else {
+					const newEeventDetails = eventStore.eventDetails;
+					newEeventDetails.expenses = [];
+					eventStore.setEventDetails(newEeventDetails)
+				}
+			});
+		}
+		fetchExpense();
+
+		const fetchMembers = async () => {
+			const membersCollection = collection(FirebaseDB, "trips", data.id, "members")
+			await onSnapshot(membersCollection, async (querySnapshot) => {
+				const membersCopy = [];
+				if (querySnapshot.size > 0) {
+					await querySnapshot.forEach((snapshotDoc) => {
+						const obj = { ...snapshotDoc.data() }
+						obj.id = snapshotDoc.id;
+						obj.isDbData = true;
+						membersCopy.push(obj);
+					});
+					setMembers(membersCopy)
+					console.log('membersCopy', membersCopy);
+					const dataSet = data;
+					dataSet.members = membersCopy;
+					const newEeventDetails = eventStore.eventDetails;
+					newEeventDetails.members = membersCopy;
+					eventStore.setEventDetails(newEeventDetails)
+					setRoutes([
+						{ key: 'expenses', title: 'Expenses', data },
+						{ key: 'members', title: 'Members', data: dataSet },
+						{ key: 'summary', title: 'Summary', data: getSummaryData() },
+					])
+				}
+			});
+		}
+
+		fetchMembers();
+
+	}, [])
+
 
 	return (
 		<>
-			<TabView style={{ flex: 1, backgroundColor: '#fff' }}
-				navigationState={{ index, routes }}
-				renderScene={renderScene}
-				onIndexChange={setIndex}
-				initialLayout={{ width: layout.width }}
-			/>
+			{members.length > 0 && (
+				<TabView style={{ flex: 1, backgroundColor: '#fff' }}
+					navigationState={{ index, routes }}
+					renderScene={renderScene}
+					onIndexChange={setIndex}
+					initialLayout={{ width: layout.width }}
+				/>
+			)}
 		</>
 	);
 }

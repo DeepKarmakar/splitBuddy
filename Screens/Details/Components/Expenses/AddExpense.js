@@ -8,9 +8,10 @@ import { FirebaseDB } from "../../../../firebaseConfig";
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { EventContext } from "../../../../EventProvider/EventProvider";
 import { GetDate } from "../../../../Utils";
-
+import { useNavigation } from '@react-navigation/native';
 
 const AddExpense = ({ documentId, members, isUpdate, data }) => {
+	const navigation = useNavigation();
 	const [expenses, setExpenses] = useState({
 		name: '',
 		date: new Date(),
@@ -62,7 +63,8 @@ const AddExpense = ({ documentId, members, isUpdate, data }) => {
 							paidBy: ''
 						})
 						// watchExpense()
-						eventStore.setEventDetails({ ...eventStore.eventDetails, test: 'hello' });
+						// eventStore.setEventDetails({ ...eventStore.eventDetails, test: 'hello' });
+						navigation.navigate('Dashboard')
 					})
 				} else {
 					const expenseCollection = collection(FirebaseDB, "trips", documentId, "expenseList")
@@ -76,8 +78,9 @@ const AddExpense = ({ documentId, members, isUpdate, data }) => {
 							amount: '',
 							paidBy: ''
 						})
-						eventStore.watchExpenses()
-						eventStore.setEventDetails({ ...eventStore.eventDetails, test: 'hello' });
+						// eventStore.watchExpenses(documentId)
+						// eventStore.setEventDetails({ ...eventStore.eventDetails, test: 'hello' });
+						navigation.navigate('Dashboard')
 					})
 				}
 			})

@@ -51,7 +51,7 @@ const Members = ({ data, setUpdateMember, isRequiredError, isUpdate }) => {
 		await deleteDoc(memberDoc).then(() => {
 			alert("Member deleted")
 		});
-		navigation.navigate('Dashboard')
+		// navigation.navigate('Dashboard')
 	};
 	const isLastItem = (index) => {
 		return members.length === index + 1;
@@ -87,13 +87,8 @@ const Members = ({ data, setUpdateMember, isRequiredError, isUpdate }) => {
 		}
 	};
 	useEffect(() => {
-		if (isUpdate) {
-			setMembers(eventStore.eventDetails.members)
-		} else {
-			setMembers(data.members || [])
-		}
-		// console.log(eventStore.eventDetails);
-	}, [eventStore]);
+		setMembers(data.members || [])
+	}, [data.members]);
 	return (
 		<ScrollView>
 			<FlatList

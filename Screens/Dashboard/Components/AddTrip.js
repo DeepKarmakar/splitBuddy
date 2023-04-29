@@ -10,9 +10,11 @@ import { collection, addDoc, serverTimestamp, writeBatch } from "firebase/firest
 import { Firebase, FirebaseDB } from "../../../firebaseConfig";
 import { getAuth } from "firebase/auth";
 import { randomId } from "../../../Utils";
+import { useNavigation } from '@react-navigation/native';
 
 
 const AddTrip = () => {
+	const navigation = useNavigation();
 	const auth = getAuth();
 	const currentUserId = auth.currentUser.uid;
 	const [formValues, handleFormValueChange, setFormValues] = formData({
@@ -100,13 +102,15 @@ const AddTrip = () => {
 
 			// Add Members
 			const membersCollection = collection(FirebaseDB, "trips", docRef.id, "members");
-			members.forEach(async (data) => {
+			await members.forEach(async (data) => {
 				try {
 					await addDoc(membersCollection, { name: data.name })
 				} catch (error) {
 					console.log("members add error", error);
 				}
 			});
+
+			navigation.navigate('Dashboard')
 
 		} catch (e) {
 			console.error("Error adding document: ", e);

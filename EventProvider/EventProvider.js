@@ -21,16 +21,21 @@ const EventProvider = (props) => {
 						const obj = { ...snapshotDoc.data() }
 						const membeDocRef = doc(FirebaseDB, "trips", eventId, "members", obj.paidBy.id)
 						try {
-							await getDoc(membeDocRef).then(memberSnapshot => {
-								obj.paidBy = memberSnapshot.data();
-								obj.paidBy.id = memberSnapshot.id;
-								obj.id = snapshotDoc.id;
-								expensesCopy.push(obj);
-								if (index == querySnapshot.size) {
-									const copyData = eventDetails;
-									copyData.expenses = expensesCopy;
-									setEventDetails(copyData)
-									// console.log(copyData);
+							await getDoc(membeDocRef).then(async memberSnapshot => {
+								if (memberSnapshot?.id) {
+									obj.paidBy = await memberSnapshot.data();
+									if (obj.paidBy) {
+
+										obj.paidBy.id = memberSnapshot.id;
+										obj.id = snapshotDoc.id;
+										expensesCopy.push(obj);
+										if (index == querySnapshot.size) {
+											const copyData = eventDetails;
+											copyData.expenses = expensesCopy;
+											setEventDetails(copyData)
+											// console.log(copyData);
+										}
+									}
 								}
 								index++;
 							});

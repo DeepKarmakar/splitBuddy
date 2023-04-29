@@ -19,7 +19,12 @@ const Card = ({ data }) => {
 		serverDate = new Date(date.seconds * 1000 + date.nanoseconds / 1000000)
 		getDate = moment(serverDate).format('DD/MM/YYYY');
 	}
-	const navigateToDetails = async () => {
+	const navigateToDetails = async (e) => {
+
+		navigation.navigate('Details', data)
+
+
+		return
 
 		const copyData = data;
 		copyData.expenses = [];
@@ -54,7 +59,7 @@ const Card = ({ data }) => {
 	return (
 		<TouchableOpacity
 			style={styles.cardContainer}
-			onPress={() => navigateToDetails()}>
+			onPress={(e) => navigateToDetails(e)}>
 			<View style={[Appstyles.flex_direction_row]}>
 				{coverImage ? (
 					<Image source={{ uri: coverImage }} style={[styles.cardImage]} />
