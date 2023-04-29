@@ -16,17 +16,44 @@ const Register = () => {
 	const navigation = useNavigation();
 
 	const handleSignUp = async () => {
-		try {
-			const res = await createUserWithEmailAndPassword(Auth, email, password);
-			const user = res.user;
-			await updateProfile(user.auth.currentUser, {
-				displayName: name,
-			});
-		} catch (err) {
-			console.error(err);
-			alert(err.message);
+		if (isValidUser()) {
+			try {
+				const res = await createUserWithEmailAndPassword(Auth, email, password);
+				const user = res.user;
+				await updateProfile(user.auth.currentUser, {
+					displayName: name,
+				});
+			} catch (err) {
+				console.error(err);
+				alert(err.message);
+			}
 		}
 	};
+
+	const isValidUser = () => {
+		if (name == '') {
+			alert('Full name is required')
+			return;
+		}
+		if (email == '') {
+			alert('Email is required')
+			return;
+		}
+		let emailRegx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+		if (emailRegx.test(email) === false) {
+			alert("Email is not correct");
+			return;
+		}
+		if (password == '') {
+			alert('Password is required')
+			return;
+		}
+		if (password.length < 6) {
+			alert('Password Length should be at least 6 charector')
+			return;
+		}
+		return true;
+	}
 
 	return (
 		<View style={[styles.container]}>
