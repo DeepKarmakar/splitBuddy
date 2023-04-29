@@ -62,7 +62,7 @@ const Popover = ({ title, content, isVisible, onClosePopup, isForceClose, openHa
 			<TouchableOpacity
 				activeOpacity={0.7}
 				style={styles.touchableOpacityStyle}
-				onPress={() => { setModalVisible(true); openHandler() }}
+				onPress={() => { setModalVisible(true); openHandler && openHandler() }}
 			>
 				<Icon
 					name="pluscircle"
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
 		height: 47,
 		alignItems: 'center',
 		justifyContent: 'center',
-		right: 0,
+		right: 10,
 		bottom: 10,
 	}, centeredView: {
 		flex: 1,
