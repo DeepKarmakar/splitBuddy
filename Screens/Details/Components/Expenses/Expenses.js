@@ -17,7 +17,18 @@ const Expenses = ({ data, changeListener }) => {
 	const eventStore = useContext(EventContext);
 	const [isUpdateExpense, setIsUpdateExpense] = useState(false);
 	const [updateItem, setUpdateItem] = useState({})
+	const [isClosed, setIsClosed] = useState(false)
+	const closePopup = (e) => {
+		setIsClosed(true)
+		setTimeout(() => {
 
+			setIsUpdateExpense(false)
+		}, 200);
+	};
+
+	const modalOpend = (e) => {
+		setIsClosed(false)
+	};
 	const removeHandler = async (event, id) => {
 		event.stopPropagation();
 		Alert.alert('Do you want to delete?', '', [
@@ -43,6 +54,7 @@ const Expenses = ({ data, changeListener }) => {
 	};
 
 	const updateExpenseHandler = (data) => {
+		// setIsClosed(false)
 		setIsUpdateExpense(true)
 		setUpdateItem(data)
 	};
@@ -63,7 +75,7 @@ const Expenses = ({ data, changeListener }) => {
 			}
 			// console.log("set called", eventStore.eventDetails.expenses);
 		}, 500);
-	}, [eventStore]);
+	}, [eventStore.eventDetails.expenses, eventStore.eventDetails.members]);
 
 	useEffect(() => {
 		if (expenses?.length) {
@@ -103,10 +115,13 @@ const Expenses = ({ data, changeListener }) => {
 						documentId={data.id}
 						members={members}
 						isUpdate={isUpdateExpense}
-						data={updateItem} />
+						data={updateItem}
+						closePopup={closePopup} />
 				}
 				isVisible={isUpdateExpense}
 				onClosePopup={closePopupHandler}
+				isForceClose={isClosed}
+				openHandler={modalOpend}
 			/>
 		</View>
 	)

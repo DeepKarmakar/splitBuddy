@@ -10,7 +10,7 @@ import { EventContext } from "../../../../EventProvider/EventProvider";
 import { GetDate } from "../../../../Utils";
 import { useNavigation } from '@react-navigation/native';
 
-const AddExpense = ({ documentId, members, isUpdate, data }) => {
+const AddExpense = ({ documentId, members, isUpdate, data, closePopup }) => {
 	const navigation = useNavigation();
 	const [expenses, setExpenses] = useState({
 		name: '',
@@ -43,7 +43,11 @@ const AddExpense = ({ documentId, members, isUpdate, data }) => {
 
 	useEffect(() => {
 		if (isUpdate) {
-			setExpenses(data)
+			const copydata = data;
+			const getDate = GetDate(copydata.date)
+			const serverDate = moment(getDate, moment.defaultFormat).toDate()
+			copydata.date = serverDate
+			setExpenses(copydata)
 		}
 	}, [isUpdate])
 
@@ -54,6 +58,7 @@ const AddExpense = ({ documentId, members, isUpdate, data }) => {
 		try {
 			const addExpenseDoc = new Promise(async (resolve, reject) => {
 				if (isUpdate) {
+					expenses.date = serverTimestamp(expenses.date)
 					const expenseDoc = doc(FirebaseDB, "trips", documentId, "expenseList", data.id)
 					await updateDoc(expenseDoc, expenses).then(res => {
 						setExpenses({
@@ -64,7 +69,8 @@ const AddExpense = ({ documentId, members, isUpdate, data }) => {
 						})
 						// watchExpense()
 						// eventStore.setEventDetails({ ...eventStore.eventDetails, test: 'hello' });
-						navigation.navigate('Dashboard')
+						// navigation.navigate('Dashboard')
+						closePopup();
 					})
 				} else {
 					const expenseCollection = collection(FirebaseDB, "trips", documentId, "expenseList")
@@ -80,7 +86,8 @@ const AddExpense = ({ documentId, members, isUpdate, data }) => {
 						})
 						// eventStore.watchExpenses(documentId)
 						// eventStore.setEventDetails({ ...eventStore.eventDetails, test: 'hello' });
-						navigation.navigate('Dashboard')
+						// navigation.navigate('Dashboard')
+						closePopup();
 					})
 				}
 			})

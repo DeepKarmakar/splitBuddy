@@ -17,12 +17,10 @@ const Dashboard = () => {
 	const dbQuery = query(collection(FirebaseDB, "trips"), where("uid", "==", currentUserId));
 	const [isClosed, setIsClosed] = useState(false)
 	const closePopup = (e) => {
-		console.log(e);
 		setIsClosed(true)
 	};
 
 	const modalOpend = (e) => {
-		console.log(e);
 		setIsClosed(false)
 	};
 
