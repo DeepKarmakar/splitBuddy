@@ -13,7 +13,7 @@ import { randomId } from "../../../Utils";
 import { useNavigation } from '@react-navigation/native';
 
 
-const AddTrip = () => {
+const AddTrip = ({ closePopup }) => {
 	const navigation = useNavigation();
 	const auth = getAuth();
 	const currentUserId = auth.currentUser.uid;
@@ -71,7 +71,6 @@ const AddTrip = () => {
 		if (isInValidForm()) {
 			return
 		}
-		console.log(isInValidForm(), ' validation false');
 
 		const data = { ...formValues };
 		data.uid = currentUserId;
@@ -109,6 +108,8 @@ const AddTrip = () => {
 					console.log("members add error", error);
 				}
 			});
+			closePopup(true)
+			clearForm()
 
 			navigation.navigate('Dashboard')
 

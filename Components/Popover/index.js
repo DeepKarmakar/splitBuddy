@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import AddTrip from '../../Screens/Dashboard/Components/AddTrip';
 import Appstyles from '../../app.scss';
 
-const Popover = ({ title, content, isVisible, onClosePopup }) => {
+const Popover = ({ title, content, isVisible, onClosePopup, isForceClose, openHandler }) => {
 	const [modalVisible, setModalVisible] = useState(false);
 
 	const closeModal = () => {
@@ -20,6 +20,13 @@ const Popover = ({ title, content, isVisible, onClosePopup }) => {
 		}
 
 	}, [isVisible])
+
+	useEffect(() => {
+		if (isForceClose) {
+			setModalVisible(!modalVisible);
+		}
+	}, [isForceClose])
+
 
 
 	return (
@@ -55,7 +62,7 @@ const Popover = ({ title, content, isVisible, onClosePopup }) => {
 			<TouchableOpacity
 				activeOpacity={0.7}
 				style={styles.touchableOpacityStyle}
-				onPress={() => setModalVisible(true)}
+				onPress={() => { setModalVisible(true); openHandler() }}
 			>
 				<Icon
 					name="pluscircle"
