@@ -99,15 +99,11 @@ const Summary = ({ data }) => {
 				})
 			})
 			setSplitSummary(splitArr)
-			// console.log(splitArr);
-			// console.log(members);
-
-
 		}
 
 
 
-	}, [eventStore]);
+	}, [eventStore.eventDetails.members, eventStore.eventDetails.expenses]);
 	return (
 		<ScrollView>
 			<FlatList
