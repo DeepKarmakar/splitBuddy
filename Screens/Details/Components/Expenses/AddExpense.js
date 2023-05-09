@@ -3,7 +3,7 @@ import Appstyles from '../../../../app.scss';
 import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown';
 import { useContext, useEffect, useState } from "react";
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, serverTimestamp, Timestamp, updateDoc } from "firebase/firestore";
 import { FirebaseDB } from "../../../../firebaseConfig";
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { EventContext } from "../../../../EventProvider/EventProvider";
@@ -30,11 +30,13 @@ const AddExpense = ({ documentId, members, isUpdate, data, closePopup }) => {
 		setExpenses({ ...expenses, [name]: name == 'amount' ? Number(val) : val });
 	}
 	const onChange = (event, selectedDate) => {
-		setExpenses({ ...expenses, date: selectedDate })
+		setExpenses({ ...expenses, date: moment(selectedDate).format('DD/MM/YYYY') })
 	};
-	const showDatepicker = () => {
-		DateTimePickerAndroid.open({
-			value: moment(expenses.date, moment.defaultFormat).toDate(),
+	const showDatepicker = async () => {
+		const formatDate = moment(expenses.date, 'DD-MM-YYYY').format('YYYY/MM/DD');
+		const todateFormat = moment(formatDate, moment.defaultFormat).toDate()
+		await DateTimePickerAndroid.open({
+			value: isUpdate ? moment(todateFormat, moment.defaultFormat).toDate() : new Date(),
 			onChange,
 			mode: 'date',
 			is24Hour: true,
@@ -53,13 +55,17 @@ const AddExpense = ({ documentId, members, isUpdate, data, closePopup }) => {
 		}
 		try {
 			const addExpenseDoc = new Promise(async (resolve, reject) => {
+				const expenseCopy = JSON.parse(JSON.stringify(expenses))
+				const formatDate = moment(expenseCopy.date, 'DD-MM-YYYY').format('YYYY/MM/DD');
+				const todateFormat = moment(formatDate, moment.defaultFormat).toDate()
+				console.log(todateFormat);
+				expenseCopy.date = Timestamp.fromDate(todateFormat)
 				if (isUpdate) {
-					expenses.date = serverTimestamp(expenses.date)
 					const expenseDoc = doc(FirebaseDB, "trips", documentId, "expenseList", data.id)
-					await updateDoc(expenseDoc, expenses).then(res => {
+					await updateDoc(expenseDoc, expenseCopy).then(res => {
 						setExpenses({
 							name: '',
-							date: serverTimestamp(),
+							date: moment(new Date()).format('DD/MM/YYYY'),
 							amount: '',
 							paidBy: ''
 						})
@@ -70,13 +76,12 @@ const AddExpense = ({ documentId, members, isUpdate, data, closePopup }) => {
 					})
 				} else {
 					const expenseCollection = collection(FirebaseDB, "trips", documentId, "expenseList")
-					const membeDocRef = doc(FirebaseDB, "trips", documentId, "members", expenses.paidBy.id)
-					expenses.paidBy = membeDocRef;
-					console.log(expenses);
-					await addDoc(expenseCollection, expenses).then(res => {
+					const membeDocRef = doc(FirebaseDB, "trips", documentId, "members", expenseCopy.paidBy.id)
+					expenseCopy.paidBy = membeDocRef;
+					await addDoc(expenseCollection, expenseCopy).then(res => {
 						setExpenses({
 							name: '',
-							date: serverTimestamp(),
+							date: moment(new Date()).format('DD/MM/YYYY'),
 							amount: '',
 							paidBy: ''
 						})
