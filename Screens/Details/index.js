@@ -9,6 +9,7 @@ import { FirebaseDB } from '../../firebaseConfig';
 import Expenses from './Components/Expenses/Expenses';
 import Members from './Components/Members/Members';
 import Summary from './Components/Summary/Summary';
+import { GetDate } from "../../Utils";
 
 const renderScene = ({ route, jumpTo }) => {
 	switch (route.key) {
@@ -41,6 +42,8 @@ const Details = ({ route, navigation }) => {
 					const expensesCopy = [];
 					await querySnapshot.forEach(async (snapshotDoc) => {
 						const obj = { ...snapshotDoc.data() }
+						obj.date = GetDate(obj.date)
+						expensesCopy.push(obj)
 						const membeDocRef = doc(FirebaseDB, "trips", data.id, "members", obj.paidBy.id)
 						try {
 							await getDoc(membeDocRef).then(async memberSnapshot => {
@@ -50,13 +53,11 @@ const Details = ({ route, navigation }) => {
 
 										obj.paidBy.id = memberSnapshot.id;
 										obj.id = snapshotDoc.id;
-										expensesCopy.push(obj);
+										// expensesCopy.push(obj);
 										if (index == querySnapshot.size) {
 											const copyData = eventDetails;
 											copyData.expenses = expensesCopy;
 											setEventDetails(copyData)
-											console.log('expensesCopy', expensesCopy);
-
 											const newEeventDetails = eventStore.eventDetails;
 											newEeventDetails.expenses = expensesCopy;
 											eventStore.setEventDetails(newEeventDetails)
@@ -90,7 +91,6 @@ const Details = ({ route, navigation }) => {
 						membersCopy.push(obj);
 					});
 					setMembers(membersCopy)
-					console.log('membersCopy', membersCopy);
 					const dataSet = data;
 					dataSet.members = membersCopy;
 					const newEeventDetails = eventStore.eventDetails;

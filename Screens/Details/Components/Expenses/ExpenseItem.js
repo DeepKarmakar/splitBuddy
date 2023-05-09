@@ -24,7 +24,7 @@ const ExpenseItem = ({ data, removeExpense, updateExpense }) => {
 				</View>
 				<View style={[Appstyles.flex_direction_row, Appstyles.align_items_center]}>
 					<Text style={[Appstyles.color_grey, styles.paidByWidth]}>{paidBy.name}</Text>
-					<Text style={[Appstyles.color_grey, Appstyles.flex_1]}>{GetDate(date)}</Text>
+					<Text style={[Appstyles.color_grey, Appstyles.flex_1]}>{date}</Text>
 					<Text
 						style={[Appstyles.formFieldText, Appstyles.flex_1, Appstyles.p_0, Appstyles.m_0, Appstyles.width_100, Appstyles.text_right]}>
 						{amount}

@@ -14,7 +14,7 @@ const AddExpense = ({ documentId, members, isUpdate, data, closePopup }) => {
 	const navigation = useNavigation();
 	const [expenses, setExpenses] = useState({
 		name: '',
-		date: new Date(),
+		date: moment(new Date()).format('DD/MM/YYYY'),
 		amount: '',
 		paidBy: { name: '', id: '' }
 	});
@@ -34,7 +34,7 @@ const AddExpense = ({ documentId, members, isUpdate, data, closePopup }) => {
 	};
 	const showDatepicker = () => {
 		DateTimePickerAndroid.open({
-			value: expenses.date,
+			value: moment(expenses.date, moment.defaultFormat).toDate(),
 			onChange,
 			mode: 'date',
 			is24Hour: true,
@@ -43,11 +43,7 @@ const AddExpense = ({ documentId, members, isUpdate, data, closePopup }) => {
 
 	useEffect(() => {
 		if (isUpdate) {
-			const copydata = data;
-			const getDate = GetDate(copydata.date)
-			const serverDate = moment(getDate, moment.defaultFormat).toDate()
-			copydata.date = serverDate
-			setExpenses(copydata)
+			setExpenses(data)
 		}
 	}, [isUpdate])
 
@@ -133,7 +129,7 @@ const AddExpense = ({ documentId, members, isUpdate, data, closePopup }) => {
 				</View>
 				<View style={[Appstyles.flex_direction_row, Appstyles.justify_content_between, styles.borderBottom, Appstyles.align_items_center, Appstyles.mt_10, Appstyles.p_b_10]}>
 					<SelectDropdown
-						defaultButtonText="Select Member"
+						defaultButtonText={isUpdate ? expenses.paidBy.name : 'Select Member'}
 						defaultValue={isUpdate ? expenses.paidBy : ''}
 						data={members}
 						onSelect={(selectedItem, index) => {
@@ -158,7 +154,7 @@ const AddExpense = ({ documentId, members, isUpdate, data, closePopup }) => {
 					/>
 					<Pressable onPress={showDatepicker}>
 						<Text style={Appstyles.color_grey}>
-							{isUpdate ? GetDate(expenses.date) : moment(expenses.date).format('DD/MM/YYYY')}
+							{expenses.date}
 						</Text>
 					</Pressable>
 				</View>
@@ -169,7 +165,7 @@ const AddExpense = ({ documentId, members, isUpdate, data, closePopup }) => {
 						placeholderTextColor="#929292"
 						style={[styles.borderBottom, Appstyles.p_b_10, Appstyles.m_0]}
 						onChange={(event) => changeHandler(event.nativeEvent.text, 'amount')}
-						value={expenses.amount}
+						value={expenses.amount.toString()}
 						keyboardType="numeric"
 					/>
 					{requiredError.amount && <Text style={[Appstyles.error_text_color, Appstyles.mt_5]}>Amount is required</Text>}
